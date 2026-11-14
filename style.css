@@ -1,0 +1,699 @@
+/* ==========================================================================
+   EcoSpark Team - checklist and timer for cleaners
+   ==========================================================================
+   Palette is taken from the main site (new-site/assets/css/styles.css): gold
+   #d4af37 is the only saturated colour, and every surface the gold sits on is
+   held near neutral (warm hue kept, saturation ~7%). That is what makes the
+   brand read as black-and-gold rather than as a page behind an amber filter,
+   and the same rule is kept here.
+
+   Dark is the default because the brand is dark. The light theme is a derived
+   counterpart, not an afterthought: on light surfaces #d4af37 fails text
+   contrast (2.0:1 on white), so accents switch to --gold-deep #8a661a and the
+   gold stays only in the gradient of buttons, which carry dark ink.
+
+   FONTS: the main site self-hosts Inter and Manrope, but only the latin and
+   latin-ext subsets - neither file contains Cyrillic, and this app's primary
+   language is Russian. Loading them would download ~170 KB and still render
+   every Russian word in a fallback face. So this page uses the system stack:
+   it renders Cyrillic natively on iOS and Android, costs nothing, and paints
+   on the first frame - which matters for a tool opened on a doorstep.
+   ========================================================================== */
+
+:root{
+  /* surfaces */
+  --bg:          #100E0D;
+  --bg-deep:     #0B0A09;
+  --surface:     #1B1817;
+  --surface-2:   #221E1C;
+  --line:        rgba(212,175,55,.16);
+  --line-soft:   rgba(244,243,241,.10);
+
+  /* gold */
+  --gold:        #d4af37;
+  --gold-light:  #f3d98d;
+  --gold-deep:   #a97f22;
+  --gold-ink:    #d4af37;              /* gold used as text/icon colour */
+  --gold-grad:   linear-gradient(135deg, #f6e3a8 0%, #e0be5c 45%, #c99f2e 100%);
+  --on-gold:     #26190a;              /* ink on top of the gold gradient */
+  --gold-wash:   rgba(212,175,55,.10); /* faint gold fill, e.g. a done row */
+
+  /* text */
+  --text:        #F4F3F1;
+  --muted:       rgba(244,243,241,.66);
+  --muted-soft:  rgba(244,243,241,.45);
+
+  /* state */
+  --danger:      #ff6b5e;
+  --danger-bg:   rgba(255,107,94,.10);
+  --ok:          #58c08a;
+
+  /* shape */
+  --r-pill:      999px;
+  --r-card:      18px;
+  --r-sm:        12px;
+
+  /* type + layout */
+  --f-ui:        system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --page:        560px;   /* this is a phone tool; it never needs to be wider */
+  --gutter:      16px;
+  --tap:         44px;    /* minimum touch target, per the brief */
+
+  --ease:        cubic-bezier(.22,.61,.36,1);
+
+  /* Height of the sticky work header, written by app.js on every resize. The
+     step list needs it for scroll-margin so that tapping a step never parks it
+     under the bar, and the break banner needs it to sit right below. */
+  --bar-h:       132px;
+}
+
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:          #F6F5F3;
+    --bg-deep:     #EFEDEA;
+    --surface:     #FFFFFF;
+    --surface-2:   #FBFAF8;
+    --line:        rgba(169,127,34,.26);
+    --line-soft:   rgba(22,19,15,.10);
+
+    --gold-ink:    #8a661a;   /* 5.4:1 on white - #d4af37 would be 2.0:1 */
+    --gold-wash:   rgba(212,175,55,.14);
+
+    --text:        #16130F;
+    --muted:       rgba(22,19,15,.66);
+    --muted-soft:  rgba(22,19,15,.46);
+
+    --danger:      #c62f22;
+    --danger-bg:   rgba(198,47,34,.08);
+    --ok:          #1f7a4d;
+  }
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--f-ui);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  /* A cleaner taps this page with wet gloves on. Killing the double-tap-zoom
+     delay and the tap highlight is what makes a tap feel like a button press
+     instead of like a web page. */
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  /* No overflow-x:hidden here, deliberately. It turns the body into a scroll
+     container in some engines and the sticky work header then stops sticking
+     to the viewport. The only element that bleeds past the gutter is .tabs,
+     and it clips itself with overflow-x:auto. */
+}
+
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input{ font:inherit; color:inherit; }
+[hidden]{ display:none !important; }
+
+:focus-visible{
+  outline:2px solid var(--gold-ink);
+  outline-offset:2px;
+  border-radius:6px;
+}
+
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+.wrap{
+  width:min(var(--page), 100%);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+/* --------------------------------------------------------------------------
+   Top bar: brand + language. Present on every screen.
+   -------------------------------------------------------------------------- */
+
+.topbar{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 0 10px;
+}
+.topbar__brand{ display:flex; align-items:center; gap:10px; margin-right:auto; min-width:0; }
+.topbar__brand img{ display:block; width:28px; height:28px; flex:none; }
+.topbar__name{
+  font-size:.82rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.topbar__name b{ color:var(--gold-ink); font-weight:700; }
+
+.lang{
+  display:flex; flex:none;
+  border:1px solid var(--line);
+  border-radius:var(--r-pill);
+  overflow:hidden;
+  background:var(--surface);
+}
+.lang button{
+  /* the brief's 44px floor applies here too: this is the one control a cleaner
+     hits while holding something in the other hand */
+  min-width:46px; height:var(--tap);
+  font-size:.8rem; font-weight:700; letter-spacing:.06em;
+  color:var(--muted);
+  transition:color .2s var(--ease), background-color .2s var(--ease);
+}
+.lang button[aria-pressed="true"]{ background:var(--gold-grad); color:var(--on-gold); }
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:var(--tap);
+  padding:13px 22px;
+  border:1px solid transparent;
+  border-radius:var(--r-pill);
+  font-size:1rem; font-weight:600;
+  transition:transform .18s var(--ease), background-color .2s var(--ease),
+             border-color .2s var(--ease), color .2s var(--ease);
+}
+.btn:active{ transform:scale(.98); }
+
+.btn--gold{
+  background:var(--gold-grad); color:var(--on-gold);
+  box-shadow:0 10px 26px -14px rgba(212,175,55,.75),
+             inset 0 1px 0 rgba(255,255,255,.45);
+}
+.btn--ghost{
+  background:var(--surface);
+  border-color:var(--line);
+  color:var(--text);
+}
+.btn--danger{
+  background:var(--danger-bg);
+  border-color:var(--danger);
+  color:var(--danger);
+}
+.btn--block{ display:flex; width:100%; }
+.btn--lg{ min-height:58px; font-size:1.06rem; padding:16px 26px; }
+
+/* --------------------------------------------------------------------------
+   Screens
+   -------------------------------------------------------------------------- */
+
+.screen{ padding-bottom:calc(32px + env(safe-area-inset-bottom)); }
+
+.screen__title{
+  margin:18px 0 6px;
+  font-size:1.6rem; font-weight:800; letter-spacing:-.02em; line-height:1.2;
+}
+.screen__sub{ margin:0 0 22px; color:var(--muted); font-size:.95rem; }
+
+.eyebrow{
+  display:block; margin:0 0 2px;
+  font-size:.74rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--gold-ink);
+}
+
+/* Gate: no token, nothing else on the page */
+.gate{
+  min-height:70svh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:16px; text-align:center;
+}
+.gate img{ width:64px; height:64px; opacity:.9; }
+.gate p{ margin:0; color:var(--muted); max-width:30ch; }
+
+/* --------------------------------------------------------------------------
+   Address screen
+   -------------------------------------------------------------------------- */
+
+.field{ display:block; margin-bottom:8px; }
+.field__label{
+  display:block; margin-bottom:8px;
+  font-size:.85rem; font-weight:600; letter-spacing:.04em; color:var(--muted);
+}
+.field__input{
+  display:block; width:100%;
+  min-height:56px; padding:15px 16px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-sm);
+  font-size:1.05rem;
+  transition:border-color .2s var(--ease);
+}
+.field__input::placeholder{ color:var(--muted-soft); }
+.field__input:focus{ outline:none; border-color:var(--gold-ink); }
+.field.is-bad .field__input{ border-color:var(--danger); }
+
+/* Одна строка на подсказку и на ошибку. min-height держит место всегда,
+   поэтому появление ошибки не двигает кнопку Старт из-под пальца. */
+.field__note{
+  margin:8px 0 0; min-height:1.2em;
+  font-size:.85rem; color:var(--muted-soft);
+}
+.field.is-bad + .field__note{
+  color:var(--danger); font-weight:600;
+}
+
+.recent{ margin:14px 0 26px; }
+.recent__title{
+  margin:0 0 10px;
+  font-size:.78rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted-soft);
+}
+.recent__list{ display:flex; flex-direction:column; gap:8px; }
+.recent__item{
+  display:flex; align-items:center; gap:10px;
+  width:100%; min-height:var(--tap);
+  padding:11px 14px;
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-sm);
+  text-align:left; font-size:.97rem;
+  transition:border-color .2s var(--ease);
+}
+.recent__item:active{ border-color:var(--gold-ink); }
+.recent__item svg{ flex:none; width:16px; height:16px; color:var(--gold-ink); }
+.recent__item span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* --------------------------------------------------------------------------
+   Type screen
+   -------------------------------------------------------------------------- */
+
+.types{ display:flex; flex-direction:column; gap:12px; }
+.type-btn{
+  display:flex; align-items:center; gap:14px;
+  width:100%; min-height:72px;
+  padding:16px 18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-card);
+  text-align:left;
+  transition:border-color .2s var(--ease), background-color .2s var(--ease), transform .18s var(--ease);
+}
+.type-btn:active{ transform:scale(.99); }
+.type-btn__mark{
+  flex:none;
+  display:grid; place-items:center;
+  width:40px; height:40px;
+  border-radius:var(--r-pill);
+  background:var(--gold-wash);
+  color:var(--gold-ink);
+  font-size:1.05rem; font-weight:800;
+}
+.type-btn__body{ min-width:0; }
+/* both are spans so the button keeps a single accessible name; they need an
+   explicit block or the name and the step count run together on one line */
+.type-btn__name{ display:block; font-size:1.1rem; font-weight:700; letter-spacing:-.01em; }
+.type-btn__meta{ display:block; font-size:.86rem; color:var(--muted); }
+.type-btn--plain{ background:transparent; border-style:dashed; }
+.type-btn--plain .type-btn__mark{ background:transparent; border:1px dashed var(--line); }
+
+/* --------------------------------------------------------------------------
+   Work screen: sticky bar
+   -------------------------------------------------------------------------- */
+
+.workbar{
+  position:sticky; top:0; z-index:30;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top);
+}
+/* color-mix is recent; without it the blur would show text sliding under a
+   transparent bar, so fall back to a solid background. */
+@supports not (background: color-mix(in srgb, red 50%, transparent)){
+  .workbar{ background:var(--bg); }
+}
+
+/* padding-block, not the `padding` shorthand: this element is also a .wrap,
+   and the shorthand would reset its inline gutter to zero - which pushed the
+   address to the screen edge and the Finish button off it. */
+.workbar__inner{ padding-block:10px 12px; }
+
+.workbar__row{ display:flex; align-items:center; gap:12px; }
+
+.workbar__where{ min-width:0; margin-right:auto; }
+.workbar__addr{
+  font-size:.97rem; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.workbar__type{
+  font-size:.8rem; color:var(--gold-ink); font-weight:600;
+  display:flex; align-items:center; gap:8px;
+}
+.workbar__change{
+  font-size:.76rem; font-weight:700; color:var(--muted);
+  text-decoration:underline; text-underline-offset:3px;
+  padding:4px 0;
+}
+
+.clock{
+  flex:none; text-align:right;
+  font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1;
+}
+.clock__time{
+  font-size:1.55rem; font-weight:800; letter-spacing:-.02em; line-height:1.05;
+}
+.clock__label{
+  font-size:.66rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted-soft);
+}
+.clock.is-paused .clock__time{ color:var(--muted-soft); }
+
+.workbar__acts{ display:flex; gap:8px; margin-top:11px; }
+.workbar__acts .btn{ flex:1; min-height:46px; padding:11px 14px; font-size:.95rem; }
+
+.progress{
+  margin-top:11px;
+  height:4px; border-radius:var(--r-pill);
+  background:var(--line-soft);
+  overflow:hidden;
+}
+.progress__fill{
+  height:100%; width:0%;
+  background:var(--gold-grad);
+  border-radius:var(--r-pill);
+  transition:width .3s var(--ease);
+}
+
+/* Break banner. Deliberately loud: it is the one state in which the timer is
+   lying unless you notice it. */
+.breakbar{
+  position:sticky; top:var(--bar-h); z-index:29;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:12px 16px;
+  background:var(--gold-grad); color:var(--on-gold);
+  font-weight:800; letter-spacing:.01em;
+  font-variant-numeric:tabular-nums;
+}
+.breakbar svg{ width:18px; height:18px; flex:none; }
+
+/* --------------------------------------------------------------------------
+   Room tabs
+   -------------------------------------------------------------------------- */
+
+.tabs{
+  display:flex; gap:8px;
+  margin:14px 0 4px;
+  overflow-x:auto;
+  /* bleed to the page edges so the strip reads as scrollable, and the last tab
+     is not glued to the gutter */
+  padding:2px var(--gutter) 10px;
+  margin-inline:calc(var(--gutter) * -1);
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  scroll-snap-type:x proximity;
+}
+.tabs::-webkit-scrollbar{ display:none; }
+
+.tab{
+  flex:none;
+  display:flex; align-items:center; gap:8px;
+  min-height:var(--tap);
+  padding:9px 15px;
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-pill);
+  font-size:.92rem; font-weight:600;
+  color:var(--muted);
+  scroll-snap-align:center;
+  transition:border-color .2s var(--ease), color .2s var(--ease), background-color .2s var(--ease);
+}
+.tab[aria-selected="true"]{
+  color:var(--text);
+  border-color:var(--gold-ink);
+  background:var(--gold-wash);
+}
+.tab__count{
+  flex:none;
+  font-size:.78rem; font-weight:700;
+  font-variant-numeric:tabular-nums;
+  color:var(--muted-soft);
+}
+.tab[aria-selected="true"] .tab__count{ color:var(--gold-ink); }
+.tab.is-full .tab__count{ color:var(--ok); }
+.tab.is-full::after{
+  content:'';
+  width:7px; height:7px; border-radius:50%;
+  background:var(--ok);
+}
+
+/* --------------------------------------------------------------------------
+   Legend
+   -------------------------------------------------------------------------- */
+
+.legend{
+  margin:6px 0 16px;
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-sm);
+  overflow:hidden;
+}
+.legend > summary{
+  display:flex; align-items:center; gap:10px;
+  min-height:var(--tap);
+  padding:11px 14px;
+  list-style:none; cursor:pointer;
+  font-size:.86rem; font-weight:700; letter-spacing:.04em;
+  color:var(--muted);
+}
+.legend > summary::-webkit-details-marker{ display:none; }
+.legend > summary::after{
+  content:''; margin-left:auto; flex:none;
+  width:8px; height:8px;
+  border-right:2px solid currentColor; border-bottom:2px solid currentColor;
+  transform:rotate(45deg) translateY(-2px);
+  transition:transform .2s var(--ease);
+}
+.legend[open] > summary::after{ transform:rotate(-135deg) translateY(-2px); }
+.legend__list{ margin:0; padding:2px 14px 14px; list-style:none; }
+.legend__list li{
+  padding:6px 0 6px 14px;
+  position:relative;
+  font-size:.9rem; color:var(--muted);
+}
+.legend__list li::before{
+  content:''; position:absolute; left:0; top:14px;
+  width:5px; height:5px; border-radius:50%; background:var(--gold-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Steps
+   -------------------------------------------------------------------------- */
+
+.steps{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; }
+
+.step{
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-sm);
+  overflow:hidden;
+  /* so a step opened by its own ⓘ never lands under the sticky bar */
+  scroll-margin-top:calc(var(--bar-h) + 12px);
+  transition:border-color .2s var(--ease), background-color .2s var(--ease);
+}
+.step.is-done{ background:var(--gold-wash); border-color:var(--line); }
+
+.step__row{ display:flex; align-items:stretch; }
+
+.step__tick{
+  flex:1;
+  display:flex; align-items:flex-start; gap:12px;
+  min-height:var(--tap);
+  padding:13px 4px 13px 13px;
+  text-align:left;
+}
+.step__num{
+  flex:none;
+  display:grid; place-items:center;
+  width:28px; height:28px; margin-top:1px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  font-size:.84rem; font-weight:700;
+  font-variant-numeric:tabular-nums;
+  color:var(--muted);
+  transition:background-color .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.step.is-done .step__num{
+  background:var(--gold-grad); border-color:transparent; color:var(--on-gold);
+}
+.step__num svg{ width:15px; height:15px; }
+
+.step__text{
+  /* 16px floor comes from the brief: these lines get read standing up */
+  font-size:1rem; line-height:1.4;
+  padding-top:3px;
+}
+.step.is-done .step__text{
+  text-decoration:line-through;
+  text-decoration-color:var(--muted-soft);
+  color:var(--muted);
+}
+
+.step__info{
+  flex:none;
+  width:var(--tap);
+  display:grid; place-items:center;
+  color:var(--muted-soft);
+  border-left:1px solid var(--line-soft);
+  transition:color .2s var(--ease);
+}
+.step__info[aria-expanded="true"]{ color:var(--gold-ink); }
+.step__info svg{ width:21px; height:21px; }
+
+.step__detail{
+  padding:0 14px 14px 53px;
+  border-top:1px solid var(--line-soft);
+  padding-top:12px;
+  font-size:.92rem;
+}
+.step__detail dl{ margin:0; display:flex; flex-direction:column; gap:8px; }
+.step__detail dt{
+  font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold-ink);
+  margin-bottom:1px;
+}
+.step__detail dd{ margin:0; color:var(--muted); }
+
+.step__warn{
+  display:flex; gap:9px;
+  margin-top:12px; padding:10px 12px;
+  background:var(--danger-bg);
+  border:1px solid var(--danger);
+  border-radius:10px;
+  color:var(--danger);
+  font-size:.9rem; font-weight:600; line-height:1.4;
+}
+.step__warn svg{ flex:none; width:18px; height:18px; margin-top:1px; }
+
+.steps__end{
+  margin:20px 0 0; padding:16px;
+  border:1px dashed var(--line);
+  border-radius:var(--r-sm);
+  text-align:center;
+  color:var(--muted); font-size:.92rem;
+}
+
+/* No-type mode */
+.plain-note{
+  margin:28px 0 0; padding:22px 18px;
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-card);
+  text-align:center; color:var(--muted);
+}
+.plain-note strong{ display:block; margin-bottom:6px; color:var(--text); font-size:1.05rem; }
+
+/* --------------------------------------------------------------------------
+   Done screen
+   -------------------------------------------------------------------------- */
+
+.done-mark{
+  margin:26px auto 18px;
+  display:grid; place-items:center;
+  width:72px; height:72px; border-radius:50%;
+  background:var(--gold-grad); color:var(--on-gold);
+}
+.done-mark svg{ width:34px; height:34px; }
+
+.summary{
+  margin:0 0 20px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-card);
+  overflow:hidden;
+}
+.summary__row{
+  display:flex; align-items:baseline; gap:14px;
+  padding:13px 16px;
+  border-bottom:1px solid var(--line-soft);
+}
+.summary__row:last-child{ border-bottom:0; }
+.summary__k{ color:var(--muted); font-size:.92rem; margin-right:auto; }
+.summary__v{
+  font-weight:700; font-size:1.02rem; text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.summary__row--head{ background:var(--gold-wash); }
+.summary__row--head .summary__v{ font-size:1.3rem; }
+
+.rooms-tally{ margin:0 0 24px; padding:0; list-style:none; }
+.rooms-tally li{
+  display:flex; align-items:center; gap:12px;
+  padding:9px 2px;
+  border-bottom:1px solid var(--line-soft);
+  font-size:.95rem;
+}
+.rooms-tally li:last-child{ border-bottom:0; }
+.rooms-tally b{ margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700; }
+.rooms-tally .is-full b{ color:var(--ok); }
+.rooms-tally .is-part b{ color:var(--gold-ink); }
+
+/* --------------------------------------------------------------------------
+   Confirm dialog
+   -------------------------------------------------------------------------- */
+
+dialog.ask{
+  width:min(380px, calc(100vw - 32px));
+  margin:auto;
+  padding:24px 22px 20px;
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:var(--r-card);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.8);
+}
+dialog.ask::backdrop{ background:rgba(0,0,0,.62); backdrop-filter:blur(3px); }
+dialog.ask h2{ margin:0 0 8px; font-size:1.25rem; font-weight:800; letter-spacing:-.01em; }
+dialog.ask p{ margin:0 0 20px; color:var(--muted); font-size:.95rem; }
+.ask__acts{ display:flex; flex-direction:column; gap:9px; }
+
+/* --------------------------------------------------------------------------
+   Pending-events indicator. Small on purpose: it is information, not an error
+   the cleaner has to act on - the queue sends by itself.
+   -------------------------------------------------------------------------- */
+
+.pending{
+  position:fixed; z-index:40;
+  left:50%; transform:translateX(-50%);
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex; align-items:center; gap:8px;
+  max-width:calc(100vw - 24px);
+  padding:8px 14px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:var(--r-pill);
+  box-shadow:0 14px 30px -18px rgba(0,0,0,.9);
+  font-size:.82rem; color:var(--muted);
+}
+.pending__dot{
+  flex:none; width:7px; height:7px; border-radius:50%;
+  background:var(--gold);
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{ 0%,100%{ opacity:.35 } 50%{ opacity:1 } }
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+
+/* --------------------------------------------------------------------------
+   360px is the floor named in the brief. At that width the two header buttons
+   still have to be thumb-sized, so the clock gives up some of its weight
+   rather than the buttons giving up height.
+   -------------------------------------------------------------------------- */
+
+@media (max-width:380px){
+  :root{ --gutter:13px; }
+  .clock__time{ font-size:1.35rem; }
+  .screen__title{ font-size:1.42rem; }
+  .step__detail{ padding-left:14px; }
+  .lang button{ min-width:44px; }
+}

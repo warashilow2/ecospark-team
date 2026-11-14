@@ -1,0 +1,302 @@
+{
+  "version": 1,
+  "types": [
+    { "id": "s", "key": "standard", "name": { "ru": "Стандарт", "en": "Standard" } },
+    { "id": "d", "key": "deep", "name": { "ru": "Генеральная", "en": "Deep clean" } },
+    { "id": "r", "key": "after_renovation", "name": { "ru": "После ремонта", "en": "After renovation" } }
+  ],
+  "noTypeOption": { "key": "none", "name": { "ru": "Продолжить без выбора", "en": "Continue without type" } },
+
+  "legend": [
+    { "ru": "Антижир (жёлтый): жир", "en": "Degreaser (yellow): grease" },
+    { "ru": "Кислота: стекло душа, краны, металл и всё блестящее", "en": "Acid: shower glass, taps, metal and anything shiny" },
+    { "ru": "Доместос: унитаз", "en": "Domestos: toilet" },
+    { "ru": "Алкоклин (синий или бесцветный): всё остальное", "en": "Alcoclean (blue or clear): everything else" },
+    { "ru": "Средство пшикать на тряпку, не на поверхность. Микрофибра чуть влажная", "en": "Spray onto the cloth, not the surface. Microfibre slightly damp" }
+  ],
+
+  "warnings": {
+    "acid": { "ru": "Кислоту никогда не смешивать с Доместосом и хлорсодержащими средствами.", "en": "Never mix acid with Domestos or any chlorine-based product." },
+    "domestos": { "ru": "Доместос содержит хлор: никогда не смешивать с Кислотой. Если рядом работали Кислотой, сначала смыть её водой.", "en": "Domestos contains chlorine: never mix with acid. If acid was used nearby, rinse it off with water first." },
+    "mould": { "ru": "Не использовать вместе с Кислотой.", "en": "Do not use together with acid." }
+  },
+
+  "_textRules": "Step text for a type: s -> text.s || text.all; d -> text.d || text.all; r -> text.r || text.all || text.d. If there is no text for the type, the step is hidden. If excludeIn contains the type, the step is hidden.",
+
+  "steps": {
+    "web": {
+      "text": { "all": { "ru": "Паутина: все углы потолка, над окнами, за мебелью", "en": "Cobwebs: all ceiling corners, above windows, behind furniture" } },
+      "info": { "ru": "Сухая щётка на длинной ручке", "en": "Dry long-handled brush" },
+      "check": { "ru": "Посмотреть углы снизу против света: нитей нет", "en": "Look up at the corners against the light: no threads" }
+    },
+    "ceil": {
+      "text": { "r": { "ru": "Потолок: вся пыль", "en": "Ceiling: all dust" } },
+      "info": { "ru": "Чуть влажная микрофибра или щётка на длинной ручке", "en": "Slightly damp microfibre or long-handled brush" },
+      "check": { "ru": "Провести рукой: рука чистая", "en": "Run your hand over it: hand stays clean" }
+    },
+    "cor": {
+      "text": {
+        "all": { "ru": "Карнизы", "en": "Curtain rails" },
+        "r": { "ru": "Карнизы: пыль и строительные следы", "en": "Curtain rails: dust and construction marks" }
+      },
+      "info": { "ru": "Чуть влажная микрофибра, Алкоклин на тряпку", "en": "Slightly damp microfibre, Alcoclean on the cloth" },
+      "check": { "ru": "Провести пальцем по верху: чисто", "en": "Run a finger along the top: clean" }
+    },
+    "lamp": {
+      "text": { "all": { "ru": "Лампы и люстры", "en": "Lamps and light fittings" } },
+      "info": { "ru": "Чуть влажная микрофибра, Алкоклин на тряпку. Если шатается, убрать только видимую часть, не рисковать", "en": "Slightly damp microfibre, Alcoclean on the cloth. If it wobbles, clean only the visible part, don't risk breaking it" },
+      "check": { "ru": "При включённом свете на плафоне нет пыли", "en": "With the light on: no dust on the shade" }
+    },
+    "pic": {
+      "text": { "all": { "ru": "Картины и рамы", "en": "Pictures and frames" } },
+      "info": { "ru": "Чуть влажная микрофибра", "en": "Slightly damp microfibre" },
+      "check": { "ru": "Верх рамы: палец чистый", "en": "Top of the frame: finger stays clean" }
+    },
+    "sw": {
+      "text": { "all": { "ru": "Выключатели и розетки", "en": "Light switches and sockets" } },
+      "info": { "ru": "Алкоклин на тряпку, не на розетку. Тряпка почти сухая", "en": "Alcoclean on the cloth, never on the socket. Cloth almost dry" },
+      "check": { "ru": "Под углом к свету нет отпечатков", "en": "At an angle to the light: no fingerprints" }
+    },
+    "wall": {
+      "text": {
+        "s": { "ru": "Стены: пятна, которые бросаются в глаза", "en": "Walls: marks that catch the eye" },
+        "d": { "ru": "Стены: проверить все, пятна оттирать сильнее", "en": "Walls: check all of them, work harder on marks" },
+        "r": { "ru": "Стены: вся пыль, краска и строительные следы", "en": "Walls: all dust, paint and construction marks" }
+      },
+      "info": { "ru": "Алкоклин. Тряпка еле влажная, почти сухая, иначе можно испортить краску", "en": "Alcoclean. Cloth barely damp, almost dry, or you can damage the paint" },
+      "check": { "ru": "Пятен нет, краска цела. После ремонта: провести рукой, рука чистая", "en": "No marks, paint undamaged. After renovation: run your hand over it, hand stays clean" }
+    },
+    "sur": {
+      "text": {
+        "s": { "ru": "Поверхности: столы, шкафы снаружи. Края предметов приподнять", "en": "Surfaces: tables, outside of wardrobes. Lift the edges of items" },
+        "d": { "ru": "Поверхности: столы, шкафы снаружи. Все предметы поднять", "en": "Surfaces: tables, outside of wardrobes. Lift every item" },
+        "r": { "ru": "Поверхности: пыль, краска, цемент", "en": "Surfaces: dust, paint, cement" }
+      },
+      "info": { "ru": "Алкоклин, чуть влажная микрофибра. Камень: не кислоту, а немного Алкоклина на тряпку", "en": "Alcoclean, slightly damp microfibre. Stone: no acid, just a little Alcoclean on the cloth" },
+      "check": { "ru": "Палец чистый, под предметами нет пыльных контуров", "en": "Finger stays clean, no dust outlines under items" }
+    },
+    "tv": {
+      "text": { "all": { "ru": "ТВ / монитор", "en": "TV / monitor" } },
+      "info": { "ru": "Спецсредство для экранов на чуть влажную микрофибру", "en": "Screen cleaner on a slightly damp microfibre" },
+      "check": { "ru": "Сбоку под светом нет разводов", "en": "From the side under light: no streaks" }
+    },
+    "win": {
+      "text": {
+        "all": { "ru": "Окна: рамы и подоконники (не стёкла)", "en": "Windows: frames and sills (not the glass)" },
+        "r": { "ru": "Окна: рамы и подоконники: пыль, краска, цемент. Стёкла: только если заказана экстра", "en": "Windows: frames and sills: dust, paint, cement. Glass: only if the extra was booked" }
+      },
+      "info": { "ru": "Алкоклин, чуть влажная микрофибра. Камень: не кислоту, а немного Алкоклина на тряпку", "en": "Alcoclean, slightly damp microfibre. Stone: no acid, just a little Alcoclean on the cloth" },
+      "check": { "ru": "Палец в пазах рамы чистый", "en": "Finger in the frame grooves stays clean" }
+    },
+    "rad": {
+      "text": {
+        "s": { "ru": "Радиаторы: сверху и снизу", "en": "Radiators: top and bottom" },
+        "d": { "ru": "Радиаторы: внутри выдуть пылесосом, видимое под решёткой пропшикать и протереть", "en": "Radiators: blow out the inside with the vacuum, spray and wipe what's visible under the grille" }
+      },
+      "info": { "ru": "Пылесос с узкой насадкой, Алкоклин", "en": "Vacuum with narrow nozzle, Alcoclean" },
+      "check": { "ru": "Посветить фонариком внутрь: пыли не видно", "en": "Shine a torch inside: no visible dust" }
+    },
+    "mov": {
+      "text": { "d": { "ru": "Отодвинуть тяжёлую мебель (кроме больших шкафов), убрать за ней", "en": "Move heavy furniture (not large wardrobes), clean behind it" } },
+      "info": { "ru": "Двигать аккуратно, не царапая пол. За большие шкафы залезть максимально", "en": "Move carefully without scratching the floor. Reach behind large wardrobes as far as possible" },
+      "check": { "ru": "За мебелью нет пыли и мусора", "en": "No dust or debris behind furniture" }
+    },
+    "pl": {
+      "text": {
+        "all": { "ru": "Плинтусы", "en": "Skirting boards" },
+        "r": { "ru": "Плинтусы: пыль, краска, цемент", "en": "Skirting boards: dust, paint, cement" }
+      },
+      "info": { "ru": "Алкоклин, чуть влажная микрофибра", "en": "Alcoclean, slightly damp microfibre" },
+      "check": { "ru": "Палец по верху чистый", "en": "Finger along the top stays clean" }
+    },
+    "door": {
+      "text": {
+        "all": { "ru": "Дверь со всех сторон, косяки, ручки", "en": "Door on all sides, frames, handles" },
+        "r": { "ru": "Дверь со всех сторон, косяки, ручки: пыль, краска", "en": "Door on all sides, frames, handles: dust, paint" }
+      },
+      "info": { "ru": "Алкоклин на чуть влажную микрофибру", "en": "Alcoclean on a slightly damp microfibre" },
+      "check": { "ru": "Торец двери и верх косяка: палец чистый", "en": "Door edge and top of frame: finger stays clean" }
+    },
+    "fl": {
+      "text": {
+        "all": { "ru": "Пол: пропылесосить, затем вымыть. От дальнего угла к выходу", "en": "Floor: vacuum, then mop. From the far corner to the exit" },
+        "r": { "ru": "Пол: пропылесосить, вымыть, при необходимости повторить", "en": "Floor: vacuum, mop, repeat if needed" }
+      },
+      "info": { "ru": "Пылесос, затем швабра. В воду: очень мало Фейри (чтобы не было пены) и очень мало концентрата Алкоклина", "en": "Vacuum, then mop. In the water: a tiny amount of Fairy (no foam) and a tiny amount of Alcoclean concentrate" },
+      "check": { "ru": "Углы и под краем мебели чисто, нет разводов. После ремонта: провести рукой, рука чистая", "en": "Corners and under furniture edges clean, no streaks. After renovation: run your hand over it, hand stays clean" }
+    },
+    "chk": {
+      "text": {
+        "all": { "ru": "Проверка: пройти маршрут заново глазами клиента", "en": "Check: walk the route again through the client's eyes" },
+        "r": { "ru": "Проверка: можно заезжать, нет пыли, краски, строительных следов", "en": "Check: ready to move in, no dust, paint or construction marks" }
+      },
+      "info": { "ru": "Сверху вниз, как убирали", "en": "Top to bottom, the same way you cleaned" },
+      "check": { "ru": "Ничего не пропущено, вещи на местах", "en": "Nothing missed, items back in place" }
+    },
+
+    "k_soak": {
+      "text": { "d": { "ru": "Снять решётки вытяжки и замочить в химии", "en": "Remove the cooker hood filters and soak them" } },
+      "excludeIn": ["r"],
+      "info": { "ru": "Антижир. Замочить в самом начале: к концу жир отойдёт", "en": "Degreaser. Soak at the very start so the grease lifts by the end" },
+      "check": { "ru": "Решётки полностью в растворе", "en": "Filters fully submerged" }
+    },
+    "k_lamp": {
+      "text": {
+        "all": { "ru": "Лампы: удалить жир", "en": "Lamps: remove grease" },
+        "r": { "ru": "Лампы: пыль, краска, жир если есть", "en": "Lamps: dust, paint, grease if any" }
+      },
+      "info": { "ru": "Антижир на тряпку. Если шатается, убрать только видимую часть", "en": "Degreaser on the cloth. If it wobbles, clean only the visible part" },
+      "check": { "ru": "На ощупь не липкие", "en": "Not sticky to the touch" }
+    },
+    "k_top": {
+      "text": {
+        "d": { "ru": "Верх шкафчиков: жир и пыль", "en": "Tops of cabinets: grease and dust" },
+        "r": { "ru": "Верх шкафчиков: пыль и строительные следы", "en": "Tops of cabinets: dust and construction marks" }
+      },
+      "info": { "ru": "Антижир (жир), Алкоклин (пыль). Толстый слой жира: железная губка, аккуратно, не испортить поверхность", "en": "Degreaser (grease), Alcoclean (dust). Thick grease: steel wool, carefully, don't damage the surface" },
+      "check": { "ru": "Палец не липкий", "en": "Finger not sticky" }
+    },
+    "k_hood": {
+      "text": { "all": { "ru": "Вытяжка: верх и корпус", "en": "Cooker hood: top and body" } },
+      "info": { "ru": "Антижир. Толстый слой жира: железная губка, аккуратно. Если после Антижира цвет неровный: попробовать Кислоту, сначала на незаметном участке", "en": "Degreaser. Thick grease: steel wool, carefully. If the colour is uneven after degreaser: try acid, test on a hidden spot first" },
+      "warn": "acid",
+      "check": { "ru": "На ощупь не липкая, цвет ровный", "en": "Not sticky, even colour" }
+    },
+    "k_cab": {
+      "text": {
+        "s": { "ru": "Шкафчики: жир с передней и боковых сторон", "en": "Cabinets: grease off the fronts and sides" },
+        "d": { "ru": "Шкафчики: все стороны тщательно + низ (цоколь)", "en": "Cabinets: all sides thoroughly + the bottom (plinth)" },
+        "r": { "ru": "Шкафчики: все стороны + низ: пыль, краска, цемент", "en": "Cabinets: all sides + bottom: dust, paint, cement" }
+      },
+      "info": { "ru": "Антижир. Внутри не убираем. Толстый слой жира: железная губка, аккуратно", "en": "Degreaser. We don't clean inside. Thick grease: steel wool, carefully" },
+      "check": { "ru": "Под углом к свету нет жирных пятен и подтёков", "en": "At an angle to the light: no grease marks or drips" }
+    },
+    "k_counter": {
+      "text": {
+        "all": { "ru": "Столешница и фартук: жир, крошки, разводы", "en": "Worktop and splashback: grease, crumbs, streaks" },
+        "r": { "ru": "Столешница и фартук: пыль, краска, цемент", "en": "Worktop and splashback: dust, paint, cement" }
+      },
+      "info": { "ru": "Антижир, затем чуть влажная микрофибра. Камень: не кислоту, а немного Алкоклина на тряпку", "en": "Degreaser, then slightly damp microfibre. Stone: no acid, just a little Alcoclean on the cloth" },
+      "check": { "ru": "Ладонью не липко, сбоку нет разводов", "en": "Not sticky to the palm, no streaks from the side" }
+    },
+    "k_stove": {
+      "text": {
+        "s": { "ru": "Плита: жир, пятна, нагар", "en": "Hob: grease, stains, burnt-on residue" },
+        "d": { "ru": "Плита: сделать как новую. Больше химии, тщательнее", "en": "Hob: make it look new. More product, more thorough" },
+        "r": { "ru": "Плита: пыль и строительные следы", "en": "Hob: dust and construction marks" }
+      },
+      "info": { "ru": "Антижир. Нагар можно аккуратно снять ножом, главное не поцарапать", "en": "Degreaser. Burnt-on residue can be carefully removed with a blade, without scratching" },
+      "check": { "ru": "Под светом нет нагара и пятен, ладонью не липко", "en": "Under light: no residue or stains, not sticky" }
+    },
+    "k_appl": {
+      "text": { "all": { "ru": "Холодильник и микроволновка снаружи", "en": "Fridge and microwave, outside" } },
+      "info": { "ru": "Алкоклин, чуть влажная микрофибра", "en": "Alcoclean, slightly damp microfibre" },
+      "check": { "ru": "Ручки без отпечатков", "en": "Handles free of fingerprints" }
+    },
+    "k_sink": {
+      "text": {
+        "s": { "ru": "Раковина и кран: полностью", "en": "Sink and tap: fully" },
+        "d": { "ru": "Раковина и кран полностью + вынуть заглушку и вычистить под ней", "en": "Sink and tap fully + remove the plug and clean underneath" }
+      },
+      "info": { "ru": "Кислота: кран и металл. Алкоклин: остальное. Камень: не кислоту, а немного Алкоклина на тряпку", "en": "Acid: tap and metal. Alcoclean: the rest. Stone: no acid, just a little Alcoclean on the cloth" },
+      "warn": "acid",
+      "check": { "ru": "Кран блестит, нет налёта и остатков еды", "en": "Tap shines, no limescale or food residue" }
+    },
+    "k_grate": {
+      "text": { "d": { "ru": "Решётки вытяжки: отмыть и поставить на место", "en": "Cooker hood filters: wash and refit" } },
+      "excludeIn": ["r"],
+      "info": { "ru": "Щётка, промыть водой, вытереть насухо", "en": "Brush, rinse with water, dry thoroughly" },
+      "check": { "ru": "Не липкие, стоят ровно", "en": "Not sticky, fitted straight" }
+    },
+
+    "b_tile": {
+      "text": {
+        "s": { "ru": "Плитка и стены: пятна, которые бросаются в глаза", "en": "Tiles and walls: marks that catch the eye" },
+        "d": { "ru": "Плитка и стены: всё, дрелью со спецнасадкой", "en": "Tiles and walls: everything, with the drill brush attachment" },
+        "r": { "ru": "Плитка и стены: пыль, затирка, краска", "en": "Tiles and walls: dust, grout residue, paint" }
+      },
+      "info": { "ru": "Плитка: Алкоклин, налёт: Кислота. Покрашенные стены: тряпка почти сухая", "en": "Tiles: Alcoclean, limescale: acid. Painted walls: cloth almost dry" },
+      "warn": "acid",
+      "check": { "ru": "Ладонью гладко, без налёта", "en": "Smooth to the palm, no limescale" }
+    },
+    "b_mirror": {
+      "text": { "all": { "ru": "Зеркало", "en": "Mirror" } },
+      "info": { "ru": "Сначала влажная микрофибра, затем сухая. Если остался ворс: смахнуть бумагой", "en": "First a damp microfibre, then a dry one. If lint remains: wipe it off with paper" },
+      "check": { "ru": "Смотреть снизу вверх: нет разводов", "en": "Look from below upwards: no streaks" }
+    },
+    "b_glass": {
+      "text": { "all": { "ru": "Стекло душа, краны и всё блестящее: налёт", "en": "Shower glass, taps and everything shiny: limescale" } },
+      "info": { "ru": "Кислота + спецщётка", "en": "Acid + special brush" },
+      "warn": "acid",
+      "check": { "ru": "Сбоку против света нет белых следов", "en": "From the side against the light: no white marks" }
+    },
+    "b_rail": {
+      "text": { "d": { "ru": "Железный карниз под и над стеклом душевой: изнутри полностью", "en": "Metal track below and above the shower glass: fully, from the inside" } },
+      "excludeIn": ["r"],
+      "info": { "ru": "Кислота + спецщётка. Пройти внутри профиля по всей длине, смыть водой и вытереть насухо", "en": "Acid + special brush. Work inside the track along its whole length, rinse with water and wipe dry" },
+      "warn": "acid",
+      "check": { "ru": "Внутри карниза по всей длине нет налёта, волос и грязи", "en": "No limescale, hair or dirt inside the track along its whole length" }
+    },
+    "b_tub": {
+      "text": { "all": { "ru": "Ванна / поддон: полностью", "en": "Bath / shower tray: fully" } },
+      "info": { "ru": "Алкоклин", "en": "Alcoclean" },
+      "check": { "ru": "Ладонью гладко, нет налёта и волос в сливе", "en": "Smooth to the palm, no limescale, no hair in the drain" }
+    },
+    "b_sink": {
+      "text": { "all": { "ru": "Раковина: полностью", "en": "Basin: fully" } },
+      "info": { "ru": "Кран: Кислота, раковина: Алкоклин", "en": "Tap: acid, basin: Alcoclean" },
+      "warn": "acid",
+      "check": { "ru": "Нет налёта и следов пасты", "en": "No limescale or toothpaste marks" }
+    },
+    "b_mould": {
+      "text": { "d": { "ru": "Грибок: верхний слой на видимых участках", "en": "Mould: top layer on visible areas" } },
+      "excludeIn": ["r"],
+      "info": { "ru": "Спецсредство из общей сумки. До идеала доводить не обязательно", "en": "Mould product from the shared bag. Doesn't have to be perfect" },
+      "warn": "mould",
+      "check": { "ru": "Видимые тёмные участки заметно светлее", "en": "Visible dark areas noticeably lighter" }
+    },
+    "b_wc": {
+      "text": { "all": { "ru": "Унитаз: со всех сторон, все крышки, трубы под ним", "en": "Toilet: all sides, all lids, pipes underneath" } },
+      "info": { "ru": "Доместос, отдельная тряпка только для унитаза", "en": "Domestos, a separate cloth used only for the toilet" },
+      "warn": "domestos",
+      "check": { "ru": "Под ободком и за основанием чисто", "en": "Clean under the rim and behind the base" }
+    },
+
+    "h_rail": {
+      "text": {
+        "all": { "ru": "Перила полностью, не только верх", "en": "Banisters fully, not just the top" },
+        "r": { "ru": "Перила полностью: пыль, краска", "en": "Banisters fully: dust, paint" }
+      },
+      "info": { "ru": "Алкоклин, чуть влажная микрофибра", "en": "Alcoclean, slightly damp microfibre" },
+      "check": { "ru": "Ладонью снизу по перилам: чисто", "en": "Palm along the underside of the rail: clean" }
+    },
+    "h_stairs": {
+      "text": { "all": { "ru": "Ступеньки: пропылесосить, затем вымыть. Сверху вниз", "en": "Stairs: vacuum, then wash. Top to bottom" } },
+      "info": { "ru": "Пылесос, затем влажная тряпка. В воду: очень мало Фейри и концентрата Алкоклина", "en": "Vacuum, then a damp cloth. In the water: a tiny amount of Fairy and Alcoclean concentrate" },
+      "check": { "ru": "Углы ступенек чистые", "en": "Stair corners clean" }
+    }
+  },
+
+  "rooms": [
+    {
+      "id": "living",
+      "name": { "ru": "Спальня / гостиная", "en": "Bedroom / living room" },
+      "steps": ["web", "ceil", "cor", "lamp", "pic", "sw", "wall", "sur", "tv", "win", "rad", "mov", "pl", "door", "fl", "chk"]
+    },
+    {
+      "id": "kitchen",
+      "name": { "ru": "Кухня", "en": "Kitchen" },
+      "steps": ["k_soak", "web", "ceil", "k_lamp", "k_top", "k_hood", "sw", "wall", "k_cab", "k_counter", "k_stove", "k_appl", "k_sink", "win", "rad", "pl", "door", "k_grate", "fl", "chk"]
+    },
+    {
+      "id": "bathroom",
+      "name": { "ru": "Ванная", "en": "Bathroom" },
+      "steps": ["web", "ceil", "lamp", "sw", "b_tile", "b_mirror", "b_glass", "b_rail", "b_tub", "b_sink", "b_mould", "b_wc", "door", "fl", "chk"]
+    },
+    {
+      "id": "hall",
+      "name": { "ru": "Коридор / лестница", "en": "Hallway / stairs" },
+      "steps": ["web", "ceil", "lamp", "pic", "sw", "wall", "sur", "h_rail", "win", "rad", "pl", "door", "h_stairs", "fl", "chk"]
+    }
+  ]
+}

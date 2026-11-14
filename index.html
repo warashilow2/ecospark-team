@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoSpark Team</title>
+<meta name="description" content="Чек-лист и таймер для клинеров EcoSpark.">
+<!-- This is an internal tool behind a personal link: keep it out of search. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#100E0D" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F6F5F3" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EcoSpark Team">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Icon sprite. One <symbol> per glyph, referenced by <use>: the info icon
+     alone appears up to 20 times in a single room list. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12.5 9.5 18 20 6.5"/>
+  </symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+  </symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M9 5v14M15 5v14"/>
+  </symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="topbar__brand">
+      <img src="logo.png" alt="" width="28" height="28">
+      <span class="topbar__name">EcoSpark <b>Team</b></span>
+    </div>
+    <div class="lang" role="group" aria-label="Язык / Language">
+      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <!-- 1. No token anywhere: this is all the page shows. -->
+  <main id="scrGate" class="screen gate" hidden>
+    <img src="logo.png" alt="" width="64" height="64">
+    <p data-t="gate"></p>
+  </main>
+
+  <!-- 2. Address + start -->
+  <main id="scrAddress" class="screen" hidden>
+    <span class="eyebrow" data-t="addressEyebrow"></span>
+    <h1 class="screen__title" id="hello"></h1>
+    <p class="screen__sub" data-t="addressSub"></p>
+
+    <form id="addressForm" novalidate>
+      <label class="field" id="addrField">
+        <span class="field__label" data-t="addressLabel"></span>
+        <!-- autocapitalize=characters: эйркод пишется капсом, и так телефон
+             не подставляет строчные. autocomplete=postal-code даёт клинеру
+             его же недавние коды из автозаполнения телефона. -->
+        <input class="field__input" id="addrInput" type="text" name="address"
+               autocomplete="postal-code" autocapitalize="characters"
+               autocorrect="off" spellcheck="false"
+               enterkeyhint="go" data-t-ph="addressPh">
+      </label>
+      <!-- Одна строка под полем на оба случая: обычно подсказка, при ошибке
+           она же краснеет и меняет текст. Два отдельных абзаца резервировали
+           две высоты, и появление ошибки поднимало кнопку Старт на 24px. -->
+      <p class="field__note" id="addrNote" data-t="addressHint" aria-live="polite"></p>
+
+      <section class="recent" id="recent" hidden>
+        <h2 class="recent__title" data-t="recentTitle"></h2>
+        <div class="recent__list" id="recentList"></div>
+      </section>
+
+      <button class="btn btn--gold btn--block btn--lg" type="submit" data-t="start"></button>
+    </form>
+  </main>
+
+  <!-- 3. Type of clean. The timer is already running. -->
+  <main id="scrType" class="screen" hidden>
+    <span class="eyebrow" id="typeClock"></span>
+    <h1 class="screen__title" data-t="typeTitle"></h1>
+    <p class="screen__sub" id="typeAddr"></p>
+    <div class="types" id="typeList"></div>
+  </main>
+
+</div>
+
+<!-- 4. Work. The bar is outside .wrap so it can span the full width when it
+     sticks; its inner block keeps the same page measure as everything else. -->
+<main id="scrWork" class="screen" hidden>
+  <div class="workbar" id="workbar">
+    <div class="wrap workbar__inner">
+      <div class="workbar__row">
+        <div class="workbar__where">
+          <div class="workbar__addr" id="workAddr"></div>
+          <div class="workbar__type">
+            <span id="workType"></span>
+            <button type="button" class="workbar__change" id="changeType" data-t="changeType" hidden></button>
+          </div>
+        </div>
+        <div class="clock" id="workClock">
+          <div class="clock__time" id="workTime">0:00</div>
+          <div class="clock__label" data-t="clockLabel"></div>
+        </div>
+      </div>
+      <div class="workbar__acts">
+        <button type="button" class="btn btn--ghost" id="breakBtn"></button>
+        <button type="button" class="btn btn--gold" id="finishBtn" data-t="finish"></button>
+      </div>
+      <div class="progress" id="progressWrap" hidden>
+        <div class="progress__fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="breakbar" id="breakBar" hidden>
+    <svg aria-hidden="true"><use href="#i-pause"/></svg>
+    <span id="breakText"></span>
+  </div>
+
+  <div class="wrap">
+    <div id="checklistHost" hidden>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <details class="legend" id="legend">
+        <summary data-t="legendTitle"></summary>
+        <ul class="legend__list" id="legendList"></ul>
+      </details>
+      <div id="stepsPanel" role="tabpanel">
+        <ol class="steps" id="steps"></ol>
+        <p class="steps__end" data-t="stepsEnd"></p>
+      </div>
+    </div>
+
+    <div class="plain-note" id="plainNote" hidden>
+      <strong data-t="plainTitle"></strong>
+      <span data-t="plainBody"></span>
+    </div>
+  </div>
+</main>
+
+<div class="wrap">
+  <!-- 5. Done -->
+  <main id="scrDone" class="screen" hidden>
+    <div class="done-mark"><svg aria-hidden="true"><use href="#i-check"/></svg></div>
+    <h1 class="screen__title" style="text-align:center" data-t="doneTitle"></h1>
+    <p class="screen__sub" style="text-align:center" id="doneAddr"></p>
+
+    <div class="summary" id="doneSummary"></div>
+    <ul class="rooms-tally" id="doneRooms"></ul>
+
+    <button class="btn btn--ghost btn--block btn--lg" id="newRun" data-t="newRun"></button>
+  </main>
+</div>
+
+<dialog class="ask" id="askFinish">
+  <h2 data-t="askFinishTitle"></h2>
+  <p data-t="askFinishBody"></p>
+  <div class="ask__acts">
+    <button type="button" class="btn btn--gold" id="askYes" data-t="askYes"></button>
+    <button type="button" class="btn btn--ghost" id="askNo" data-t="askNo"></button>
+  </div>
+</dialog>
+
+<div class="pending" id="pending" hidden>
+  <span class="pending__dot"></span>
+  <span id="pendingText"></span>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
